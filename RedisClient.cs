@@ -15,7 +15,7 @@ public class RedisClient : MonoBehaviour
 {
 	public string host = "127.0.0.1";
 	public int port = 6379;
-	public bool startOnConnect = true;
+	public bool connectOnStart = true;
 
 	public enum CLIENT_TYPE
 	{
@@ -63,7 +63,7 @@ public class RedisClient : MonoBehaviour
 	{
 		cliantAs = clientType;
 
-		if(startOnConnect)
+		if(connectOnStart)
 			Connect();
 	}
 	
