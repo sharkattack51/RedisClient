@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using System;
 using UnityEngine;
 using TeamDev.Redis;
@@ -15,7 +14,7 @@ public class RedisClient : MonoBehaviour
 {
 	public string host = "127.0.0.1";
 	public int port = 6379;
-	public bool connectOnStart = true;
+	public bool startOnConnect = true;
 
 	public enum CLIENT_TYPE
 	{
@@ -60,7 +59,7 @@ public class RedisClient : MonoBehaviour
 	{
 		cliantAs = clientType;
 
-		if(connectOnStart)
+		if(startOnConnect)
 			Connect();
 	}
 	
@@ -174,13 +173,18 @@ public class RedisClient : MonoBehaviour
 		if(cliantAs == CLIENT_TYPE.PUBLISHER)
 		{
 			if(isConnect && redis != null)
-			{	
-				// 送信
-				redis.Messaging.Publish(channel, message);
-			}
+				StartCoroutine(PublishCoroutine(channel, message));
 		}
 		else
 			Debug.LogWarning("RedisClient :: Publish can only client type [ CLIENT_TYPE.PUBLISHER ]");
+	}
+
+	private IEnumerator PublishCoroutine(string channel, string message)
+	{
+		// 送信
+		redis.Messaging.Publish(channel, message);
+
+		yield return null;
 	}
 
 	private void messageReceived(string channel, string message)
