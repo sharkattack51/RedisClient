@@ -35,9 +35,6 @@ public class RedisClient : MonoBehaviour
 #region Pub/Sub
 
 	// スレッドでのデータ受信
-	private Thread pubsubSendThread = null;
-
-	// スレッドでのデータ受信
 	private volatile bool isDataReceived = false;
 	private string receivedChannel = "";
 	private string receivedMessage = "";
@@ -110,12 +107,6 @@ public class RedisClient : MonoBehaviour
 	// 切断
 	public void Close()
 	{
-		if(pubsubSendThread != null)
-		{
-			pubsubSendThread.Join();
-			pubsubSendThread = null;
-		}
-
 		if(redis != null)
 		{
 			redis.MessageReceived -= messageReceived;
@@ -184,25 +175,8 @@ public class RedisClient : MonoBehaviour
 		{
 			if(isConnect && redis != null)
 			{	
-				try
-				{
-					// 送信スレッドを開始
-					if(pubsubSendThread != null)
-					{
-						pubsubSendThread.Join();
-						pubsubSendThread = null;
-					}
-					pubsubSendThread = new Thread(new ThreadStart(() => {
-						// 送信
-						redis.Messaging.Publish(channel, message);
-					}));
-					pubsubSendThread.IsBackground = true;
-					pubsubSendThread.Start();
-				}
-				catch(Exception err)
-				{
-					Debug.LogError(err.Message);
-				}
+				// 送信
+				redis.Messaging.Publish(channel, message);
 			}
 		}
 		else
