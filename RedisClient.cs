@@ -14,16 +14,15 @@ public class RedisClient : MonoBehaviour
 {
 	public string host = "127.0.0.1";
 	public int port = 6379;
-	public bool startOnConnect = true;
+	public bool connectOnStart = true;
 
 	public enum CLIENT_TYPE
 	{
-		READER = 0,
-		WRITER,
+		READWRITER = 0,
 		PUBLISHER,
 		SUBSCRIBER
 	}
-	public CLIENT_TYPE clientType = CLIENT_TYPE.READER;
+	public CLIENT_TYPE clientType = CLIENT_TYPE.READWRITER;
 	private CLIENT_TYPE cliantAs;
 	
 	private RedisDataAccessProvider redis = null;
@@ -59,7 +58,7 @@ public class RedisClient : MonoBehaviour
 	{
 		cliantAs = clientType;
 
-		if(startOnConnect)
+		if(connectOnStart)
 			Connect();
 	}
 	
@@ -121,7 +120,7 @@ public class RedisClient : MonoBehaviour
 
 	public void Set(string key, string value)
 	{
-		if(cliantAs == CLIENT_TYPE.WRITER)
+		if(cliantAs == CLIENT_TYPE.READWRITER)
 		{
 			if(isConnect && redis != null)
 			{
@@ -130,14 +129,14 @@ public class RedisClient : MonoBehaviour
 			}
 		}
 		else
-			Debug.LogWarning("RedisClient :: Set can only client type [ CLIENT_TYPE.WRITER ]");
+			Debug.LogWarning("RedisClient :: Set can only client type [ CLIENT_TYPE.READWRITER ]");
 	}
 
 	public string Get(string key)
 	{
 		string ret = "";
 
-		if(cliantAs == CLIENT_TYPE.READER)
+		if(cliantAs == CLIENT_TYPE.READWRITER)
 		{
 			if(isConnect && redis != null)
 			{
@@ -148,7 +147,7 @@ public class RedisClient : MonoBehaviour
 			}
 		}
 		else
-			Debug.LogWarning("RedisClient :: Get can only client type [ CLIENT_TYPE.READER ]");
+			Debug.LogWarning("RedisClient :: Get can only client type [ CLIENT_TYPE.READWRITER ]");
 
 		return ret;
 	}
@@ -194,7 +193,7 @@ public class RedisClient : MonoBehaviour
 		receivedChannel = channel;
 		receivedMessage = message;
 		
-		//Debug.Log(string.Format("RedisClient :: channel is [ {0} ] / message is [ {1} ]", channel, message));
+		Debug.Log(string.Format("RedisClient :: channel is [ {0} ] / message is [ {1} ]", channel, message));
 	}
 
 #endregion
