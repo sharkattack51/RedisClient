@@ -154,6 +154,20 @@ public class RedisClient : MonoBehaviour
 
 #endregion
 
+	public void Zadd(string key, float score, string value)
+	{
+		if(cliantAs == CLIENT_TYPE.READWRITER)
+		{
+			if(isConnect && redis != null)
+			{
+				redis.SendCommand(RedisCommand.ZADD, key, score.ToString("f6"), value);
+				redis.WaitComplete();
+			}
+		}
+		else
+			Debug.LogWarning("RedisClient :: ZADD can only client type [ CLIENT_TYPE.READWRITER ]");
+	}
+
 #region Pub/Sub
 
 	public void Subscribe(params string[] channels)
